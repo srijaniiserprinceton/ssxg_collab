@@ -17,8 +17,6 @@ def plot_Bfields_allsat(**B_data_allsat):
 
     fig, ax = plt.subplots(Nsat, 1, figsize=(9.5, 8))
 
-    print(B_data_allsat)
-
     # looping over subplots
     for i, key in enumerate(B_data_allsat.keys()):
         B_sat = B_data_allsat[key]['B']
