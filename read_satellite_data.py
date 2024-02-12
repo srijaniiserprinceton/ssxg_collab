@@ -82,9 +82,13 @@ def get_PSP_data(start_time, end_time, data_products,
     return retrieved_data_products
 
 # function to download and read Wind data 
-def get_Wind_data(start_time, end_time, data_products):
+def get_Wind_data(start_time, end_time, data_products,
+                  datatype='BFIELD',
+                  cdf_files_dir=None,
+                  file_prefix='wi_h3-rtn_mfi',
+                  file_suffix='v04'):
     '''
-    Function to download the specified data products from PSP
+    Function to download the specified data products from Wind
     between the given time intervals
 
     Parameters:
@@ -120,6 +124,13 @@ def get_Wind_data(start_time, end_time, data_products):
         # saving the magnetic field in RTN format as a (3, Ntimes) array
         retrieved_data_products['time_B'] = time_fld
         retrieved_data_products['B'] = BRTN
+
+    else:
+        data = misc_FN.read_cdf(start_time, end_time, cdf_files_dir, file_prefix, file_suffix, datatype)
+
+        # saving the magnetic field in RTN format as a (3, Ntimes) array
+        retrieved_data_products['time_B'] = data.time
+        retrieved_data_products['B'] = data.data.T
 
     return retrieved_data_products
 

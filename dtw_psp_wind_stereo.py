@@ -38,8 +38,8 @@ if __name__=='__main__':
     tstart_psp = '2023-09-22/14:00:00'
     tend_psp = '2023-09-23/10:00:00'
 
-    tstart_wind = '2023-09-22/14:00:00'
-    tend_wind = '2023-09-23/10:00:00'
+    tstart_wind = '2023-09-24/00:00:00'
+    tend_wind = '2023-09-27/00:00:00'
 
     tstart_stereo = '2023-09-23/12:00:00'
     tend_stereo = '2023-09-26/12:00:00'
@@ -52,16 +52,29 @@ if __name__=='__main__':
     PSP_data_dict = load_data.get_PSP_data(tstart_psp, tend_psp, data_products, cdf_files_dir='fc_psp_data')
 
     # loading Wind data
-
+    Wind_data_dict = load_data.get_Wind_data(tstart_wind, tend_wind, data_products, cdf_files_dir='wind_data')
     
     # loading Stereo-A data
     StereoA_data_dict = load_data.get_StereoA_data(tstart_stereo, tend_stereo, data_products)
     
     # plotting the different retrieved fields to check
-    plot_FN.plot_Bfields_allsat(psp=PSP_data_dict, wind=StereoA_data_dict, stereoA=StereoA_data_dict)
+    plot_FN.plot_Bfields_allsat(psp=PSP_data_dict, wind=Wind_data_dict, stereoA=StereoA_data_dict)
 
     # calculating the alignments using dtw
-    alignment_dict_stereo_stereo = dtw_Bvectors(PSP_data_dict, StereoA_data_dict, downsampling_factors=[100, 1000])
+    # PSP & Wind
+    alignment_dict_PSP_Wind = dtw_Bvectors(PSP_data_dict, Wind_data_dict, downsampling_factors=[100, 100])
+    for key in alignment_dict_PSP_Wind.keys():
+        alignment_dict_PSP_Wind[key].plot(type="threeway", xlab='PSP', ylab='Wind')
+    # plt.savefig('plots/PSP_Wind.png')
 
-    for key in alignment_dict_stereo_stereo.keys():
-        alignment_dict_stereo_stereo[key].plot(type="threeway", xlab='PSP', ylab='Stereo-A')
+    # PSP & Stereo-A
+    alignment_dict_PSP_stereo = dtw_Bvectors(PSP_data_dict, StereoA_data_dict, downsampling_factors=[100, 1000])
+    for key in alignment_dict_PSP_stereo.keys():
+        alignment_dict_PSP_stereo[key].plot(type="threeway", xlab='PSP', ylab='Stereo-A')
+    # plt.savefig('plots/PSP_StereoA.png')
+
+    # Wind & Stereo-A
+    alignment_dict_Wind_stereo = dtw_Bvectors(Wind_data_dict, StereoA_data_dict, downsampling_factors=[100, 1000])
+    for key in alignment_dict_Wind_stereo.keys():
+        alignment_dict_Wind_stereo[key].plot(type="threeway", xlab='Wind', ylab='Stereo-A')
+    # plt.savefig('plots/Wind_StereoA.png')
